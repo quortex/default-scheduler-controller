@@ -25,6 +25,9 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	corev1 "quortex.io/default-scheduler-controller/api/v1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -42,10 +45,12 @@ func init() {
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
+	var schedulerName string
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
+	flag.StringVar(&schedulerName, "scheduler-name", "default-scheduler", "The scheduler to set as default scheduler for all pods.")
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
@@ -62,6 +67,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Setup webhooks
+	setupLog.Info("setting up webhook server")
+	hookServer := mgr.GetWebhookServer()
+
+	setupLog.Info("registering webhooks to the webhook server")
+	hookServer.Register("/mutate-v1-pod", &webhook.Admission{Handler: &corev1.PodSchedulerSetter{SchedulerName: schedulerName}})
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")
