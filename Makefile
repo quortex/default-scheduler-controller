@@ -78,3 +78,9 @@ CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)
 endif
+
+# Install cert-manager.
+cert-manager:
+	@helm repo add jetstack https://charts.jetstack.io
+	@kubectl create namespace cert-manager &> /dev/null | true
+	@helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.0.2 --set installCRDs=true
