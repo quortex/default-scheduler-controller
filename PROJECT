@@ -1,0 +1,3 @@
+domain: default-scheduler-controller.quortex.io
+repo: quortex.io/default-scheduler-controller
+version: "2"
