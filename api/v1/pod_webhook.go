@@ -28,7 +28,11 @@ import (
 )
 
 // +kubebuilder:webhook:path=/mutate-v1-pod,mutating=true,failurePolicy=ignore,groups=core,resources=pods,verbs=create;update,versions=v1,name=mpod.kb.io
-// +kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;watch;update;patch
+
+// This webhook implementation is deeply inspired by controller-runtime examples.
+//
+// See examples here :
+// https://github.com/kubernetes-sigs/controller-runtime/tree/release-0.6/examples/builtins
 
 // log is for logging in this package.
 var podlog = logf.Log.WithName("pod-resource")
@@ -65,15 +69,6 @@ func (s *PodSchedulerSetter) Handle(ctx context.Context, req admission.Request) 
 	}
 
 	return admission.PatchResponseFromRaw(req.Object.Raw, marshaledPod)
-}
-
-// PodSchedulerSetter implements inject.Client.
-// A client will be automatically injected.
-
-// InjectClient injects the client.
-func (s *PodSchedulerSetter) InjectClient(c client.Client) error {
-	s.client = c
-	return nil
 }
 
 // PodSchedulerSetter implements admission.DecoderInjector.
