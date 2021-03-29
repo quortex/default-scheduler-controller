@@ -1,0 +1,90 @@
+{{- $fullName := include "default-scheduler-controller.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "default-scheduler-controller.labels" . | nindent 4 }}
+{{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "default-scheduler-controller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "default-scheduler-controller.selectorLabels" . | nindent 8 }}
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+      {{- with .Values.manager }}
+        - name: manager
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          command:
+            - /manager
+          args:
+            - --metrics-addr={{ ternary "127.0.0.1:8080" "0.0.0.0:8080" $.Values.kubeRBACProxy.enabled }}
+            - --enable-leader-election
+            - --scheduler-name={{ .schedulerName }}
+          imagePullPolicy: {{ .image.pullPolicy }}
+          ports:
+            - containerPort: 9443
+              name: webhook-server
+              protocol: TCP
+          {{- if not $.Values.kubeRBACProxy.enabled }}
+            - containerPort: 8080
+              name: http
+          {{- end }}
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: cert
+              readOnly: true
+      {{- end }}
+      {{- with .Values.kubeRBACProxy }}
+        {{- if .enabled }}
+        - name: kube-rbac-proxy
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          args:
+            - --secure-listen-address=0.0.0.0:8443
+            - --upstream=http://127.0.0.1:8080/
+            - --logtostderr=true
+            - --v=10
+          imagePullPolicy: {{ .image.pullPolicy }}
+          ports:
+            - containerPort: 8443
+              name: https
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriod }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert

@@ -1,0 +1,49 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+## Prerequisites
+
+### Kubernetes
+A [Kubernetes](https://kubernetes.io/) cluster of version v1.16 or later is required.
+
+### CertManager
+This operator needs [CertManager](https://cert-manager.io/docs/) v0.11 or later to be installed on the cluster.
+
+## Usage
+
+In a kubernetes cluster, by default the schedulerName attribute of a pod is "default-scheduler".
+This tool handles a mutating webhook to override the defaults-scheduler attribute for new pods created.
+
+## Installation
+
+1. Add default-scheduler-controller helm repository
+
+```sh
+helm repo add default-scheduler-controller https://quortex.github.io/default-scheduler-controller
+```
+
+2. Create a namespace for default-scheduler-controller
+
+```sh
+kubectl create ns default-scheduler-controller-system
+```
+
+3. Deploy the appropriate release.
+
+```sh
+helm install default-scheduler-controller default-scheduler-controller/default-scheduler-controller -n default-scheduler-controller-system
+```
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.maintainersSection" . }}

@@ -84,3 +84,8 @@ cert-manager:
 	@helm repo add jetstack https://charts.jetstack.io
 	@kubectl create namespace cert-manager &> /dev/null | true
 	@helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.0.2 --set installCRDs=true
+
+# Generate helm chart documentation
+.PHONY: doc
+doc:
+	@docker run --rm --volume "${PWD}/helm/default-scheduler-controller:/helm-docs" jnorwood/helm-docs:latest -s file
