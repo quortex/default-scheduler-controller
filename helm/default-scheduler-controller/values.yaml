@@ -1,0 +1,59 @@
+# Default values for default-scheduler-controller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+manager:
+  image:
+    # -- default-scheduler-controller manager image repository.
+    repository: quortexio/default-scheduler-controller
+    # -- default-scheduler-controller manager image tag.
+    tag: latest
+    # -- default-scheduler-controller manager image pull policy.
+    pullPolicy: IfNotPresent
+  # -- default-scheduler-controller manager container required resources.
+  resources: {}
+
+  # -- The scheduler to set as default scheduler for all pods.
+  schedulerName: default-scheduler
+
+kubeRBACProxy:
+  enabled: true
+  image:
+    # -- kube-rbac-proxy image repository.
+    repository: gcr.io/kubebuilder/kube-rbac-proxy
+    # -- kube-rbac-proxy image tag.
+    tag: v0.5.0
+    # -- kube-rbac-proxy image pull policy.
+    pullPolicy: IfNotPresent
+  # --  kube-rbac-proxy container required resources.
+  resources: {}
+
+# -- Number of desired pods.
+replicaCount: 1
+
+# --  A list of secrets used to pull containers images.
+imagePullSecrets: []
+
+# --  Helm's name computing override.
+nameOverride: ""
+
+# --  Helm's fullname computing override.
+fullnameOverride: ""
+
+# --  Annotations to be added to pods.
+podAnnotations: {}
+
+# --  Annotations to be added to deployment.
+deploymentAnnotations: {}
+
+# --  How long to wait for pods to stop gracefully.
+terminationGracePeriod: 30
+
+# --  Node labels for default-scheduler-controller pod assignment.
+nodeSelector: {}
+
+# --  Node tolerations for default-scheduler-controller scheduling to nodes with taints.
+tolerations: []
+
+# --  Affinity for default-scheduler-controller pod assignment.
+affinity: {}
