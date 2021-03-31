@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  default-scheduler-controller:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-03-31T12:53:31.625187864Z"
+    description: A controller responsible of pods default scheduler overriding.
+    digest: 2d276c9612c5855174be99901cad7cea23ac46c4fd4c2d79154be72b0de66aff
+    name: default-scheduler-controller
+    type: application
+    urls:
+    - https://github.com/quortex/default-scheduler-controller/releases/download/default-scheduler-controller-chart-0.1.0/default-scheduler-controller-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-03-31T12:53:31.625193464Z"
