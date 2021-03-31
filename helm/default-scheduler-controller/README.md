@@ -41,7 +41,7 @@ helm install default-scheduler-controller default-scheduler-controller/default-s
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| manager.image.repository | string | `"quortexio/default-scheduler-controller"` | default-scheduler-controller manager image repository. |
+| manager.image.repository | string | `"eu.gcr.io/quortex-registry-public/default-scheduler-controller"` | default-scheduler-controller manager image repository. |
 | manager.image.tag | string | `"latest"` | default-scheduler-controller manager image tag. |
 | manager.image.pullPolicy | string | `"IfNotPresent"` | default-scheduler-controller manager image pull policy. |
 | manager.resources | object | `{}` | default-scheduler-controller manager container required resources. |
